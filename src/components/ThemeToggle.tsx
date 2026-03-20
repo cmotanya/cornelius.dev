@@ -1,81 +1,93 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from "react";
 
-type ThemeMode = 'light' | 'dark' | 'auto'
+type ThemeMode = "light" | "dark";
+type IconPhase = "enter" | "exit";
 
 function getInitialMode(): ThemeMode {
-  if (typeof window === 'undefined') {
-    return 'auto'
-  }
-
-  const stored = window.localStorage.getItem('theme')
-  if (stored === 'light' || stored === 'dark' || stored === 'auto') {
-    return stored
-  }
-
-  return 'auto'
+  if (typeof window === "undefined") return "light";
+  return localStorage.getItem("theme") === "dark" ? "dark" : "light";
 }
 
 function applyThemeMode(mode: ThemeMode) {
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-  const resolved = mode === 'auto' ? (prefersDark ? 'dark' : 'light') : mode
-
-  document.documentElement.classList.remove('light', 'dark')
-  document.documentElement.classList.add(resolved)
-
-  if (mode === 'auto') {
-    document.documentElement.removeAttribute('data-theme')
-  } else {
-    document.documentElement.setAttribute('data-theme', mode)
-  }
-
-  document.documentElement.style.colorScheme = resolved
+  document.documentElement.classList.remove("light", "dark");
+  document.documentElement.classList.add(mode);
+  document.documentElement.setAttribute("data-theme", mode);
+  document.documentElement.style.colorScheme = mode;
 }
 
 export default function ThemeToggle() {
-  const [mode, setMode] = useState<ThemeMode>('auto')
+  const [mode, setMode] = useState<ThemeMode>(getInitialMode);
+  const [phase, setPhase] = useState<IconPhase>("enter");
+  const [ripple, setRipple] = useState(false);
+  const animating = useRef(false);
 
   useEffect(() => {
-    const initialMode = getInitialMode()
-    setMode(initialMode)
-    applyThemeMode(initialMode)
-  }, [])
-
-  useEffect(() => {
-    if (mode !== 'auto') {
-      return
-    }
-
-    const media = window.matchMedia('(prefers-color-scheme: dark)')
-    const onChange = () => applyThemeMode('auto')
-
-    media.addEventListener('change', onChange)
-    return () => {
-      media.removeEventListener('change', onChange)
-    }
-  }, [mode])
+    applyThemeMode(mode);
+  }, [mode]);
 
   function toggleMode() {
-    const nextMode: ThemeMode =
-      mode === 'light' ? 'dark' : mode === 'dark' ? 'auto' : 'light'
-    setMode(nextMode)
-    applyThemeMode(nextMode)
-    window.localStorage.setItem('theme', nextMode)
+    if (animating.current) return;
+    animating.current = true;
+
+    setPhase("exit");
+    setRipple(true);
+
+    setTimeout(() => {
+      const next: ThemeMode = mode === "light" ? "dark" : "light";
+      setMode(next);
+      setPhase("enter");
+      localStorage.setItem("theme", next);
+      setTimeout(() => {
+        animating.current = false;
+      }, 320);
+    }, 180);
   }
 
-  const label =
-    mode === 'auto'
-      ? 'Theme mode: auto (system). Click to switch to light mode.'
-      : `Theme mode: ${mode}. Click to switch mode.`
+  const isLight = mode === "light";
 
   return (
     <button
       type="button"
       onClick={toggleMode}
-      aria-label={label}
-      title={label}
-      className="rounded-full border border-[var(--chip-line)] bg-[var(--chip-bg)] px-3 py-1.5 text-sm font-semibold text-[var(--sea-ink)] shadow-[0_8px_22px_rgba(30,90,72,0.08)] transition hover:-translate-y-0.5"
+      aria-label={`Switch to ${isLight ? "dark" : "light"} mode`}
+      aria-pressed={!isLight}
+      className={[
+        "relative size-12 overflow-hidden rounded-full border",
+        "flex items-center justify-center",
+        "transition-all duration-300 ease-out",
+        "hover:scale-105 focus-visible:outline-none active:scale-95",
+        "focus-visible:ring-primary focus-visible:ring-2 focus-visible:ring-offset-2",
+        isLight ? "border-inverse-primary" : "border-outline-variant",
+      ].join(" ")}
+      onAnimationEnd={() => setRipple(false)}
     >
-      {mode === 'auto' ? 'Auto' : mode === 'dark' ? 'Dark' : 'Light'}
+      {/* Ripple */}
+      {ripple && (
+        <span
+          aria-hidden="true"
+          className={[
+            "absolute inset-0 rounded-full",
+            "animate-[theme-ripple_500ms_ease-out_forwards]",
+            isLight ? "bg-white/15" : "bg-black/10",
+          ].join(" ")}
+        />
+      )}
+
+      {/* Icon */}
+      <span
+        aria-hidden="true"
+        className={[
+          "absolute flex items-center justify-center",
+          phase === "enter"
+            ? "animate-[theme-icon-enter_320ms_cubic-bezier(0.34,1.4,0.64,1)_forwards]"
+            : "animate-[theme-icon-exit_200ms_cubic-bezier(0.4,0,1,1)_forwards]",
+        ].join(" ")}
+      >
+        {isLight ? "☀️" : "🌙"}
+      </span>
     </button>
-  )
+  );
 }
+//         {
+//           mode === "light" ? "☀️" : "🌙";
+//         }
