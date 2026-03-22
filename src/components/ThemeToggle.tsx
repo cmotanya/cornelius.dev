@@ -57,7 +57,9 @@ export default function ThemeToggle() {
         "transition-all duration-300 ease-out",
         "hover:scale-105 focus-visible:outline-none active:scale-95",
         "focus-visible:ring-primary focus-visible:ring-2 focus-visible:ring-offset-2",
-        isLight ? "border-inverse-primary" : "border-outline-variant",
+        isLight
+          ? "border-inverse-primary bg-surface"
+          : "border-outline-variant",
       ].join(" ")}
       onAnimationEnd={() => setRipple(false)}
     >
@@ -68,7 +70,6 @@ export default function ThemeToggle() {
           className={[
             "absolute inset-0 rounded-full",
             "animate-[theme-ripple_500ms_ease-out_forwards]",
-            isLight ? "bg-white/15" : "bg-black/10",
           ].join(" ")}
         />
       )}
@@ -88,6 +89,3 @@ export default function ThemeToggle() {
     </button>
   );
 }
-//         {
-//           mode === "light" ? "☀️" : "🌙";
-//         }

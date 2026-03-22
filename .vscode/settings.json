@@ -33,5 +33,6 @@
   "tailwindCSS.experimental.configFile": "src/styles.css",
   "editor.codeActionsOnSave": {
     "source.organizeImports.biome": "explicit"
-  }
+  },
+  "cSpell.words": ["Hikvision", "Tanstart"]
 }

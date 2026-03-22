@@ -1,11 +1,17 @@
+// routes/index.tsx
+import About from "#/components/About";
+import Hero from "#/components/Hero";
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/")({ component: App });
+export const Route = createFileRoute("/")({
+  component: Home,
+});
 
-function App() {
+function Home() {
   return (
-    <main className="px-4 pt-14 pb-8">
-      <section></section>
+    <main>
+      <Hero />
+      <About />
     </main>
   );
 }
