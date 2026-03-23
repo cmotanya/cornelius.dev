@@ -1,11 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { Button } from "./ui/button";
 import { skills_group } from "data/skills";
 import { cn } from "#/lib/utils";
-import { Plus } from "lucide-react";
+import { CalendarClock, Plus, SmilePlus } from "lucide-react";
 
 export default function AboutSection() {
-  const [visible, setVisible] = useState(true);
+  const [visible] = useState(true);
   const [open, setOpen] = useState<string | null>(null);
 
   const toggle = (category: string): void => {
@@ -47,7 +47,8 @@ export default function AboutSection() {
         </p>
       </div>
 
-      <div className="border-outline-variant/50 flex flex-col rounded-xl border">
+      <div className="space-y-3">
+        <p className="text-muted font-medium">Here are my core skills:</p>
         {skills_group.map((skill, i) => {
           const isOpen = open === skill.category;
 
@@ -55,32 +56,47 @@ export default function AboutSection() {
             <div
               key={skill.category}
               className={cn(
-                "border-b-outline-variant/50 border-b px-3 py-5 transition-all duration-150 ease-in last-of-type:border-b-0",
+                "relative mb-2 pl-3 transition-all duration-150 ease-in last-of-type:border-b-0",
                 visible ? "opacity-100" : "opacity-0",
               )}
               style={{ transitionDelay: `${i * 90}ms` }}
             >
+              <div className="bg-muted/10 absolute top-0 left-0 h-full w-0.5 overflow-hidden rounded-full">
+                <span
+                  className={cn(
+                    "bg-muted absolute inset-0 origin-top transition-all duration-500 ease-in-out",
+                    isOpen ? "scale-y-100 opacity-100" : "scale-y-0 opacity-0",
+                  )}
+                />
+              </div>
+
               <div
                 onClick={() => toggle(skill.category)}
-                className="flex w-full transition-all duration-150 ease-in hover:scale-100 active:scale-100"
+                className="group w-full leading-none transition-all duration-150 ease-in hover:scale-100 active:scale-100"
               >
-                <div className="font-mono text-lg">
-                  <span>{skill.category}</span>
-                </div>
-                <span className="ml-auto">
-                  <Plus
-                    size={16}
-                    className={cn(
-                      "transition-all duration-150 ease-in",
-                      isOpen ? "rotate-45" : "rotate-0",
-                    )}
-                  />
+                <span className="text-muted text-xs font-medium">
+                  Category {skill.index}
                 </span>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-semibold">
+                    {skill.category}
+                  </span>
+                  <span className="border-muted/50 group-hover:border-muted ml-auto flex size-7 items-center justify-center rounded-full border transition-all duration-150 ease-in group-hover:border-2">
+                    <Plus
+                      strokeWidth={3}
+                      size={16}
+                      className={cn(
+                        "text-muted transition-all duration-150 ease-in",
+                        isOpen ? "rotate-45" : "rotate-0",
+                      )}
+                    />
+                  </span>
+                </div>
               </div>
 
               <div
                 className={cn(
-                  "grid overflow-hidden transition-all duration-150 ease-in",
+                  "grid overflow-hidden pt-1 transition-all duration-150 ease-in",
                   isOpen
                     ? "grid-rows-[1fr] opacity-100"
                     : "grid-rows-[0fr] opacity-0",
@@ -90,7 +106,7 @@ export default function AboutSection() {
                   {skill.tags.map((tag) => (
                     <span
                       key={tag}
-                      className="border-outline-variant text-muted rounded-md border px-1 py-0.5 text-xs font-medium"
+                      className="border-outline-variant text-muted hover:bg-outline-variant/20 rounded-md border px-1 py-0.5 text-xs font-medium transition-all duration-150 ease-in-out hover:scale-105"
                     >
                       {tag}
                     </span>
@@ -102,19 +118,38 @@ export default function AboutSection() {
         })}
       </div>
 
-      <div className="grid grid-cols-2 gap-2">
-        <div className="border-tertiary/50 bg-tertiary-container/10 flex flex-col items-center gap-2 rounded-xl border-2 p-4 hover:translate-y-1">
-          <p className="text-tertiary/70 text-5xl font-bold">05+</p>
-          <p className="text-tertiary text-center text-xs font-semibold">
-            Years of Technical Experience 🕒
-          </p>
-        </div>
+      <div className="space-y-4">
+        <p>
+          Through the years of experience and effort placed, shows my commitment
+          to <strong>quality</strong> and <strong>excellence</strong> in my work.
+        </p>
+        <div className="border-outline-variant space-y-4 rounded-xl border p-4 backdrop-blur-sm">
+          <div className="border-outline-variant/40 flex items-center justify-between border-b pb-3">
+            <div className="flex flex-col items-center gap-1">
+              <p className="text-muted flex items-center gap-1 text-xs font-medium tracking-wide">
+                Years Of Experience{" "}
+                <CalendarClock size={16} strokeWidth={2.5} />
+              </p>
+              <p className="text-tertiary text-5xl font-bold">05+</p>
+            </div>
 
-        <div className="border-secondary/30 bg-surface-bright flex flex-col items-center gap-2 rounded-xl border-2 p-4">
-          <p className="text-muted text-5xl font-bold">100+</p>
-          <p className="text-secondary font- text-center text-xs font-semibold">
-            Happy Clients Served 👌
-          </p>
+            <span className="bg-tertiary-container/30 border-tertiary text-tertiary rounded-full border px-2 py-1 text-xs font-semibold">
+              Active
+            </span>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div className="flex flex-col items-center gap-1">
+              <p className="text-muted flex items-center gap-1 text-xs font-medium tracking-wide">
+                Happy Clients Served <SmilePlus size={16} strokeWidth={2.5} />
+              </p>
+              <p className="text-primary text-5xl font-bold">100+</p>
+            </div>
+
+            <span className="bg-primary-container/30 text-primary border-primary rounded-full border px-2 py-1 text-xs font-semibold">
+              Trusted
+            </span>
+          </div>
         </div>
       </div>
 
