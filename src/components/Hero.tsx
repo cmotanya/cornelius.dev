@@ -1,83 +1,141 @@
 import { Button } from "#/components/ui/button";
 import { ArrowBigRight, ArrowUpRight } from "lucide-react";
 import { easeInOut, motion } from "framer-motion";
+import { useRef } from "react";
+import { useGSAP } from "@gsap/react";
+import { glitchEffect } from "#/lib/animations/glitch";
+import { textReveal } from "#/lib/animations/textReveal";
+import { gsap } from "gsap";
+
+// Assuming you have these font classes available in your Tailwind config.
+// If not, you can use `font-mono` for both to keep it simple Brutalist.
+const FONT_RAW_SERIF = "font-serif"; // Using existing font-serif for "let me take you"
+const FONT_RAW_DISPLAY = "font-extrabold tracking-tighter uppercase"; // Replaces font-display for "ZERO" and "hero"
+const FONT_MONO = "font-mono"; // For subtext and badges
 
 function Hero() {
+  const container = useRef<HTMLElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const subTextRef = useRef<HTMLParagraphElement>(null);
+  const heroElement = useRef<HTMLSpanElement>(null);
+
+  gsap.registerPlugin(useGSAP);
+
+  useGSAP(
+    () => {
+      // Keep existing GSAP animations
+      if (titleRef.current && subTextRef.current) {
+        textReveal({
+          titleEl: titleRef.current,
+          subTextEl: subTextRef.current,
+        });
+      }
+
+      if (heroElement.current) {
+        glitchEffect(heroElement.current);
+      }
+    },
+    { scope: container },
+  );
+
   return (
     <section
+      ref={container}
       id="/"
-      className="flex min-h-screen flex-col space-y-6 overflow-hidden px-4 pt-8"
+      className="bg-background text-foreground flex min-h-screen flex-col space-y-12 overflow-hidden px-6 pt-12"
     >
-      <div className="text-tertiary border-tertiary/50 shadow-tertiary/20 mx-auto flex items-center justify-center gap-1 rounded-full border px-2 py-1 text-xs font-semibold tracking-[0.15em] uppercase shadow-md">
-        <span className="bg-tertiary size-2 rounded-full" />
+      {/* 1. Status Badge - Brutalized */}
+      <div className="border-foreground bg-secondary/10 mx-auto flex items-center justify-center gap-2 rounded-none border-2 px-4 py-2 font-mono text-sm font-bold uppercase tracking-wider">
+        <span className="bg-error size-3 border border-foreground" />
         Open For Contract Work
       </div>
 
-      <div className="space-y-5">
-        <p className="text-sm">
-          Hi, I&apos;m <span className="font-bold">Cornelius👋</span>
-        </p>
-        <h1 className="flex flex-col items-center justify-center font-serif uppercase">
-          let me take you
-          <span className="text-muted block text-5xl">
-            from{" "}
-            <span className="font-display text-error text-6xl font-extrabold tracking-wide">
-              Zero
-            </span>{" "}
-          </span>
-          <span className="block text-5xl">
-            to{" "}
-            <span className="font-display text-tertiary text-7xl font-extrabold tracking-wide">
-              hero
+      {/* 2. Main Title Section */}
+      <div className="flex flex-col items-center justify-center space-y-8 text-center">
+        <div ref={titleRef}>
+          <p className={`${FONT_MONO} text-base`}>
+            // Hi, I&apos;m <span className="font-bold underline">Cornelius</span>
+          </p>
+          
+          {/* Main H1 - Heavy, raw, uppercase */}
+          <h1 className={`leading-none ${FONT_RAW_SERIF} uppercase`}>
+            <span className="block text-4xl md:text-5xl">let me take you</span>
+            
+            <span className="block mt-2">
+              <span className="text-muted text-6xl md:text-7xl font-light">from </span>
+              {/* ACCENT COLOR: High contrast, thick border */}
+              <span className={`${FONT_RAW_DISPLAY} text-error bg-error/10 border-2 border-foreground px-4 py-1 text-8xl md:text-9xl`}>
+                Zero
+              </span>
             </span>
-          </span>
-        </h1>
-        <p className="text-center leading-relaxed">
-          I handle everything from setup to security. <br /> Every step from{" "}
-          <strong>web apps</strong> to <strong>security</strong> and{" "}
-          <strong>network infrastructure</strong>, we have a perfect solution
+            
+            <span className="block mt-4 text-6xl md:text-7xl">
+              to{" "}
+              <span
+                ref={heroElement}
+                className={`${FONT_RAW_DISPLAY} text-foreground bg-foreground/5 border-2 border-foreground px-4 py-1 text-8xl md:text-9xl`}
+              >
+                hero
+              </span>
+            </span>
+          </h1>
+        </div>
+
+        {/* 3. Subtext - Monospace and Raw */}
+        <p ref={subTextRef} className={`${FONT_MONO} max-w-2xl text-center text-lg leading-relaxed`}>
+          [ I handle everything from setup to security. ] <br /> 
+          Every step from{" "}
+          <strong className="bg-foreground text-background px-1">web apps</strong> to{" "}
+          <strong className="bg-foreground text-background px-1">security</strong> and{" "}
+          <strong className="bg-foreground text-background px-1">network infrastructure</strong>, we have a raw solution
           for you.{" "}
         </p>
       </div>
-      <div className="mx-5 flex flex-col gap-3">
+
+      {/* 4. Action Buttons - Stark, Rectangular, Heavy Borders */}
+      <div className="mx-auto flex w-full max-w-md flex-col gap-4 sm:flex-row sm:justify-center">
+        {/* Button 1: Dark (Stark Primary) */}
         <Button
           variant="outline"
-          className="hover:bg-primary/80 border-outline-variant bg-primary border"
+          className="border-foreground bg-foreground hover:bg-muted group h-auto w-full rounded-none border-4 px-8 py-4 text-xl sm:w-auto"
         >
           <a
             href="#contact"
-            className="text-surface flex items-center justify-center gap-2 text-base uppercase hover:underline"
+            className="text-background group-hover:text-foreground flex items-center justify-center gap-3 font-bold uppercase tracking-tighter"
           >
-            Start From Zero <ArrowBigRight />
+            Start From Zero <ArrowBigRight className="size-6 transition-transform group-hover:translate-x-2" />
           </a>
         </Button>
+        
+        {/* Button 2: Light (Stark Secondary) */}
         <Button
           variant="outline"
-          className="hover:bg-surface-bright border-outline-variant bg-surface border"
+          className="border-foreground bg-background hover:bg-muted group h-auto w-full rounded-none border-4 px-8 py-4 text-xl sm:w-auto"
         >
           <a
             href="#contact"
-            className="text-primary flex items-center justify-center gap-2 text-base uppercase hover:underline"
+            className="text-foreground flex items-center justify-center gap-3 font-bold uppercase tracking-tighter"
           >
-            View My Projects <ArrowUpRight />
+            View My Projects <ArrowUpRight className="size-6 transition-transform group-hover:-translate-y-1 group-hover:translate-x-1" />
           </a>
         </Button>
       </div>
+
+      {/* 5. Scroll Indicator - Stark and Functional */}
       <a
         href="#about"
-        className="text-muted flex flex-col items-center justify-center gap-2 text-sm font-semibold"
+        className={`${FONT_MONO} text-foreground/70 flex flex-col items-center justify-center gap-3 text-sm font-bold uppercase mt-auto pb-8`}
       >
-        <span>Scroll Down</span>
-
-        <div className="border-primary/30 flex h-10 w-6 items-start justify-center rounded-full border p-1">
+        <span>[ Scroll ]</span>
+        <div className="border-foreground flex h-14 w-8 items-start justify-center rounded-none border-4 p-1">
           <motion.div
-            animate={{ y: [0, 16, 0] }}
+            animate={{ y: [0, 24, 0] }}
             transition={{
-              duration: 1.2,
+              duration: 1, // Faster, sharper animation
               repeat: Infinity,
-              ease: easeInOut,
+              ease: easeInOut, // Keeping existing, but could switch to "linear" or "anticipate"
             }}
-            className="scroll-dot bg-primary size-2 rounded-full"
+            className="bg-foreground size-4 rounded-none border-2 border-background"
           />
         </div>
       </a>

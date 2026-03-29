@@ -85,6 +85,8 @@
   --color-scrim: rgba(0, 0, 0, 0.35);
   --color-inverse-surface: #362f2e;
   --color-inverse-primary: #ffb59d;
+
+  --width: min(70ch, calc(100% - 0.5rem));
 }
 
 :root[data-theme="dark"] {
@@ -170,7 +172,8 @@ html {
 
 body {
   margin: 0;
-  /* width: calc(max(100% - 6rem), 100vw); */
+  margin-inline: auto;
+  width: var(--width);
   font-size: 15px;
   font-family: var(--font-sans);
   background-color: var(--color-background);
